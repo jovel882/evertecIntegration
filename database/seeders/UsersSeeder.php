@@ -23,7 +23,7 @@ class UsersSeeder extends Seeder
             'email' => 'admin_ordenes@evertec.com',
             'phone' => '+5713795628',
             'password' => bcrypt('password'),
-        ])->assignRole('Ordenes');
+        ])->assignRole('Orders');
         User::create([
             'name' => 'John Fredy Velasco Bareño',
             'email' => 'jovel882@gmail.com',

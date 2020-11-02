@@ -19,7 +19,7 @@
 
         {{-- Name field --}}
         <div class="input-group mb-3">
-            <input type="text" name="name" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
+            <input required type="text" name="name" class="form-control {{ $errors->has('name') ? 'is-invalid' : '' }}"
                    value="{{ old('name') }}" placeholder="{{ __('adminlte::adminlte.full_name') }}" autofocus>
             <div class="input-group-append">
                 <div class="input-group-text">
@@ -35,7 +35,7 @@
 
         {{-- Email field --}}
         <div class="input-group mb-3">
-            <input type="email" name="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
+            <input required type="email" name="email" class="form-control {{ $errors->has('email') ? 'is-invalid' : '' }}"
                    value="{{ old('email') }}" placeholder="{{ __('adminlte::adminlte.email') }}">
             <div class="input-group-append">
                 <div class="input-group-text">
@@ -49,9 +49,24 @@
             @endif
         </div>
 
+        {{-- Phone field --}}
+        <div class="input-group mb-3">
+            <input required type="tel" name="phone" pattern="\+?[1-9]\d{1,14}" class="form-control {{ $errors->has('phone') ? 'is-invalid' : '' }}" value="{{ old('phone') }}" placeholder="{{ __('adminlte::adminlte.phone') }}">
+            <div class="input-group-append">
+                <div class="input-group-text">
+                    <span class="fas fa-phone-square-alt {{ config('adminlte.classes_auth_icon', '') }}"></span>
+                </div>
+            </div>
+            @if ($errors->has('phone'))
+                <div class="invalid-feedback">
+                    <strong>{{ $errors->first('phone') }}</strong>
+                </div>
+            @endif
+        </div>
+
         {{-- Password field --}}
         <div class="input-group mb-3">
-            <input type="password" name="password"
+            <input required type="password" name="password"
                    class="form-control {{ $errors->has('password') ? 'is-invalid' : '' }}"
                    placeholder="{{ __('adminlte::adminlte.password') }}">
             <div class="input-group-append">

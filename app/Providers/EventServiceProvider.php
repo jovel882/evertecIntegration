@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Events\CreateOrder as EventCreateOrder;
+use App\Events\CreateTransactionState as EventCreateTransactionState;
+use App\Listeners\CreateOrder;
+use App\Listeners\CreateTransactionState;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
@@ -18,15 +22,18 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+        EventCreateOrder::class => [
+            CreateOrder::class,
+        ],
+        EventCreateTransactionState::class => [
+            CreateTransactionState::class,
+        ],
     ];
 
     /**
      * Register any events for your application.
-     *
-     * @return void
      */
     public function boot()
     {
-        //
     }
 }

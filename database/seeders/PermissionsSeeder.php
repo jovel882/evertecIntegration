@@ -12,6 +12,43 @@ class PermissionsSeeder extends Seeder
      */
     public function run()
     {
-        Permission::create(['name' => 'OrdersView']);
+        Permission::insert([
+            [
+                'name' => 'orders',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.create',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.update',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.view',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.viewAny',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.delete',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.trash',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.forceDelete',
+                'guard_name' => 'web'
+            ],
+            [
+                'name' => 'orders.restore',
+                'guard_name' => 'web'
+            ]
+        ]);
     }
 }
