@@ -14,6 +14,14 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
+        if ( $request->route()->getName() == 'orders.store' && $request->has('quantity')) {
+            session([
+                'orderData' => [
+                    'quantity' => $request->quantity
+                ]
+            ]);
+        }
+
         if (! $request->expectsJson()) {
             return route('login');
         }

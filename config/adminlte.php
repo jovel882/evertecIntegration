@@ -1,5 +1,7 @@
 <?php
 
+use Illuminate\Support\Facades\App;
+
 return [
 
     /*
@@ -14,8 +16,8 @@ return [
     |
     */
 
-    'title' => 'AdminLTE 3',
-    'title_prefix' => '',
+    'title' => 'Integracion',
+    'title_prefix' => 'EVERTEC -',
     'title_postfix' => '',
 
     /*
@@ -31,7 +33,7 @@ return [
     */
 
     'use_ico_only' => false,
-    'use_full_favicon' => false,
+    'use_full_favicon' => true,
 
     /*
     |--------------------------------------------------------------------------
@@ -45,12 +47,12 @@ return [
     |
     */
 
-    'logo' => '<b>Admin</b>LTE',
-    'logo_img' => 'vendor/adminlte/dist/img/AdminLTELogo.png',
+    'logo' => '<b>EVERTEC</b>',
+    'logo_img' => 'images/logo.png',
     'logo_img_class' => 'brand-image img-circle elevation-3',
     'logo_img_xl' => null,
     'logo_img_xl_class' => 'brand-image-xs',
-    'logo_img_alt' => 'AdminLTE',
+    'logo_img_alt' => 'Evertec',
 
     /*
     |--------------------------------------------------------------------------
@@ -83,7 +85,7 @@ return [
     |
     */
 
-    'layout_topnav' => null,
+    'layout_topnav' => false,
     'layout_boxed' => null,
     'layout_fixed_sidebar' => null,
     'layout_fixed_navbar' => null,
@@ -101,12 +103,12 @@ return [
     |
     */
 
-    'classes_auth_card' => 'card-outline card-primary',
-    'classes_auth_header' => '',
+    'classes_auth_card' => 'card-outline card-orange',
+    'classes_auth_header' => 'bg-orange',
     'classes_auth_body' => '',
-    'classes_auth_footer' => '',
-    'classes_auth_icon' => '',
-    'classes_auth_btn' => 'btn-flat btn-primary',
+    'classes_auth_footer' => 'text-orange',
+    'classes_auth_icon' => 'fa-lg text-orange',
+    'classes_auth_btn' => 'btn-flat bg-orange',
 
     /*
     |--------------------------------------------------------------------------
@@ -124,12 +126,12 @@ return [
     'classes_brand' => '',
     'classes_brand_text' => '',
     'classes_content_wrapper' => '',
-    'classes_content_header' => '',
-    'classes_content' => '',
-    'classes_sidebar' => 'sidebar-dark-primary elevation-4',
-    'classes_sidebar_nav' => '',
-    'classes_topnav' => 'navbar-white navbar-light',
-    'classes_topnav_nav' => 'navbar-expand',
+    'classes_content_header' => 'container-fluid',
+    'classes_content' => 'container-fluid',
+    'classes_sidebar' => 'sidebar-dark-orange elevation-4',
+    'classes_sidebar_nav' => 'flex-column nav-child-indent nav-compact text-sm',
+    'classes_topnav' => 'navbar-light',
+    'classes_topnav_nav' => 'navbar-expand-md',
     'classes_topnav_container' => 'container',
 
     /*
@@ -188,7 +190,7 @@ return [
 
     'use_route_url' => false,
 
-    'dashboard_url' => 'home',
+    'dashboard_url' => '/',
 
     'logout_url' => 'logout',
 
@@ -196,9 +198,9 @@ return [
 
     'register_url' => 'register',
 
-    'password_reset_url' => 'password/reset',
+    'password_reset_url' => false,
 
-    'password_email_url' => 'password/email',
+    'password_email_url' => false,
 
     'profile_url' => false,
 
@@ -231,87 +233,29 @@ return [
     */
 
     'menu' => [
+        ['header' => 'Menu Principal'],
         [
-            'text' => 'search',
-            'search' => true,
-            'topnav' => true,
+            'text' => 'orders',
+            'route' => 'orders.index',
+            'icon' => 'fas fa-fw fa-file-alt',
+            'model' => \App\Models\User::class,
+            'can' => 'isAuth',
         ],
         [
-            'text' => 'blog',
-            'url'  => 'admin/blog',
-            'can'  => 'manage-blog',
+            'text' => 'login',
+            'route' => 'login',
+            'icon' => 'fas fa-fw fa-sign-in-alt',
+            'topnav_right' => true,
+            'model' => \App\Models\User::class,
+            'can' => 'isNotAuth',
         ],
         [
-            'text'        => 'pages',
-            'url'         => 'admin/pages',
-            'icon'        => 'far fa-fw fa-file',
-            'label'       => 4,
-            'label_color' => 'success',
-        ],
-        ['header' => 'account_settings'],
-        [
-            'text' => 'profile',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-user',
-        ],
-        [
-            'text' => 'change_password',
-            'url'  => 'admin/settings',
-            'icon' => 'fas fa-fw fa-lock',
-        ],
-        [
-            'text'    => 'multilevel',
-            'icon'    => 'fas fa-fw fa-share',
-            'submenu' => [
-                [
-                    'text' => 'level_one',
-                    'url'  => '#',
-                ],
-                [
-                    'text'    => 'level_one',
-                    'url'     => '#',
-                    'submenu' => [
-                        [
-                            'text' => 'level_two',
-                            'url'  => '#',
-                        ],
-                        [
-                            'text'    => 'level_two',
-                            'url'     => '#',
-                            'submenu' => [
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                                [
-                                    'text' => 'level_three',
-                                    'url'  => '#',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-                [
-                    'text' => 'level_one',
-                    'url'  => '#',
-                ],
-            ],
-        ],
-        ['header' => 'labels'],
-        [
-            'text'       => 'important',
-            'icon_color' => 'red',
-            'url'        => '#',
-        ],
-        [
-            'text'       => 'warning',
-            'icon_color' => 'yellow',
-            'url'        => '#',
-        ],
-        [
-            'text'       => 'information',
-            'icon_color' => 'cyan',
-            'url'        => '#',
+            'text' => 'register',
+            'route' => 'register',
+            'icon' => 'fas fa-fw fa-user-plus',
+            'topnav_right' => true,
+            'model' => \App\Models\User::class,
+            'can' => 'isNotAuth',
         ],
     ],
 
@@ -351,7 +295,7 @@ return [
 
     'plugins' => [
         'Datatables' => [
-            'active' => false,
+            'active' => true,
             'files' => [
                 [
                     'type' => 'js',
