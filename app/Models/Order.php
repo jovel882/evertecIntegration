@@ -104,7 +104,7 @@ class Order extends Model
      */
     public function getById($id, $withTrash = false)
     {
-        $query = $this->with(['transactions' => function ($query) {
+        $query = $this->with(['transactions.transaction_states' => function ($query) {
             $query->orderBy('created_at', 'desc');
         }])
             ->where('id', $id);

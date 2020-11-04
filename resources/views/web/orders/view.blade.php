@@ -60,7 +60,7 @@
                             </div>
                         </div>
                         <div class="card-footer">
-                            <a class="btn bg-secondary" href="{{ route('orders.index') }}">
+                            <a class="btn bg-secondary mb-5" href="{{ route('orders.index') }}">
                                 <i class="fas fa-chevron-circle-left"></i> Volver
                             </a>
                             @includeWhen(Auth::user()->can('pay', $order) , 'web.orders.layouts.buttonPay')                            

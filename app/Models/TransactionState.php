@@ -34,4 +34,13 @@ class TransactionState extends Model
     {
         return $this->belongsTo('App\Models\Transaction');
     }
+    /**
+     * Accesor para el mensaje de estado.
+     *
+     * @return string Mensaje.
+     */
+    public function getMessageAttribute()
+    {
+        return json_decode($this->data)->status->message ?? null;
+    }    
 }
