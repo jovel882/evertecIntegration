@@ -50,7 +50,7 @@ class OrderPolicy
      */
     public function pay(User $user, Order $order)
     {
-        return $this->workThis($user, $order);
+        return $user->id === $order->user_id;
     }
 
     /**

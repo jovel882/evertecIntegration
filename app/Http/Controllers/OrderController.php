@@ -4,8 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreOrder;
 use App\Http\Responsables\OrderCreate;
+use App\Http\Responsables\OrderPay;
 use App\Models\Order;
-use Facades\App\Payment;
+use Facades\App\Strategies\Pay\Context;
 use Illuminate\Http\Request;
 use Illuminate\Support\MessageBag;
 
@@ -13,12 +14,11 @@ class OrderController extends Controller
 {
     /**
      * Estado creado.
-     *
      */
     public const STATUSCREATED = 'CREATED';
+
     /**
      * Estado creado.
-     *
      */
     public const STATUSPENDING = 'PENDING';
 
@@ -44,7 +44,7 @@ class OrderController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
         return view('web.orders.list', [
             'orders' => $this->order->getAll(auth()->user()->can('viewAny', Order::class)),
@@ -59,7 +59,7 @@ class OrderController extends Controller
      */
     public function store(StoreOrder $request, MessageBag $messageBag)
     {
-        return new OrderCreate($this->order->store($this->getDataCreate($request)), $messageBag);
+        return new OrderCreate($messageBag, $this->order->store($this->getDataCreate($request)));
     }
 
     /**
@@ -84,41 +84,24 @@ class OrderController extends Controller
      * @param Order $order Modelo para pagar.
      * @return \Illuminate\Http\Response
      */
-    public function pay(Order $order)
+    public function pay(Order $order, MessageBag $messageBag)
     {
-        if (\Gate::denies('pay', $order)) {
-            abort(403);
-        }
+        $this->authorize('pay', $order);
 
         if ($order->status !== self::STATUSCREATED) {
-            return redirect()->route('orders.show', ['order' => $order->id]);
+            return new OrderPay($messageBag, $order, [
+                "No se puede realizar el pago ya que la orden se encuentra en estado {$order->status} el cual es un estado final y no permite reintentar el pago",
+            ]);
         }
 
         $transaction = $order->getLastTransaction();
         if (! $transaction || ($transaction->current_status !== self::STATUSPENDING && $transaction->current_status !== self::STATUSCREATED)) {
-            $response = Payment::pay('place_to_pay', $order);
-            if (! $response) {
-                return redirect()
-                    ->route('orders.show', ['order' => $order->id])
-                    ->withInput()
-                    ->withErrors(new \Illuminate\Support\MessageBag([
-                        'msg_0' => 'El metodo de pago no esta soportado.',
-                    ]));
-            }
-
-            if (! $response->success) {
-                return redirect()
-                    ->route('orders.show', ['order' => $order->id])
-                    ->withInput()
-                    ->withErrors(new \Illuminate\Support\MessageBag([
-                        'msg_0' => 'Se genero un error al crear la transacion.',
-                        'msg_1' => $response->exception->getMessage(),
-                    ]));
-            }
-            return redirect($response->url);
+            return $this->getResponsePay(Context::pay($order, 'place_to_pay'), $order, $messageBag);
         }
         if ($transaction->current_status !== self::STATUSCREATED) {
-            return redirect()->route('orders.show', ['order' => $order->id]);
+            return new OrderPay($messageBag, $order, [
+                "No se puede realizar el pago ya que la ultima transaccion se encuentra en estado {$transaction->current_status} no permite crear otra transaccion",
+            ]);
         }
         return redirect($transaction->url ?? '');
     }
@@ -131,5 +114,22 @@ class OrderController extends Controller
             'user_id' => auth()->user()->id,
         ]);
         return $request->all();
+    }
+
+    private function getResponsePay($response, Order $order, MessageBag $messageBag)
+    {
+        if (! $response) {
+            return new OrderPay($messageBag, $order, [
+                'msg_0' => 'El metodo de pago no esta soportado o no esta accesible.',
+            ]);
+        }
+
+        if (! $response->success) {
+            return new OrderPay($messageBag, $order, [
+                'msg_0' => 'Se genero un error al crear la transacion.',
+                'msg_1' => $response->exception->getMessage(),
+            ]);
+        }
+        return redirect($response->url);
     }
 }

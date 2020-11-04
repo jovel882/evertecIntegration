@@ -14,7 +14,10 @@ class AddColumnPhoneOnUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('phone', 40)->comment("Es el numero de telefono del usuario.")->after('email');
+            $field = $table->string('phone', 40)->comment("Es el numero de telefono del usuario.")->after('email');
+            if (app()->env == "testing") {
+                $field->default('default_value');
+            }            
         });
         if (app()->env != "testing") {
             \DB::statement('ALTER TABLE `users` comment "Es la tabla donde se almacenan los usuarios." ');

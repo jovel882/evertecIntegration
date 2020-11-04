@@ -13,7 +13,8 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')
+    ->name('home');
 
 Auth::routes([
     'reset' => false,
@@ -22,24 +23,41 @@ Auth::routes([
 ]);
 Route::group(
     [
-        'prefix' => 'orders', 
         'middleware' => ['auth'],
     ],
     function() {
-        Route::get('/','OrderController@index')
-            ->name('orders.index');
-        Route::match(['post', 'get'], '/store','OrderController@store')
-            ->name('orders.store');            
-        Route::get('/{order}','OrderController@show')
-            ->where('order', '[0-9]+')
-            ->name('orders.show');
-        Route::get('{order}/pay','OrderController@pay')
-            ->where('order', '[0-9]+')
-            ->name('orders.pay');                    
+        Route::group(
+            [
+                'prefix' => 'orders',
+            ],
+            function () {
+                Route::get('/', 'OrderController@index')
+                    ->name('orders.index');
+                Route::match(['post', 'get'], '/store', 'OrderController@store')
+                    ->name('orders.store');
+                Route::get('/{order}', 'OrderController@show')
+                    ->where('order', '[0-9]+')
+                    ->name('orders.show');
+                Route::get('{order}/pay', 'OrderController@pay')
+                    ->middleware('can:pay,order')
+                    ->where('order', '[0-9]+')
+                    ->name('orders.pay');
+            }
+        );
+        Route::get('/notification/unread/{id}', 'HomeController@unreadNotification')
+            ->name('notification.unread');
     }
 );
-Route::get('/notification/unread/{id}', function ($id) {
-    $notification = auth()->user()->notifications()->find($id);
-    $notification->markAsRead();
-    return redirect($notification->data['url']);
-})->name('notification.unread');
+Route::group(
+    [
+        'prefix' => 'transactions',
+    ],
+    function () {
+        Route::get('/receive/{gateway}/{uuid}', 'TransactionController@receive')
+            ->where([
+                'uuid', '[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}',
+                'gateway' => implode('|', config('config.gateways')),
+            ])
+            ->name('transactions.receive');
+    }
+);

@@ -11,11 +11,25 @@ class HomeController extends Controller
      *
      * @return \Illuminate\Contracts\Support\Renderable
      */
-    public function index(Request $request)
+    public function index()
     {
 		if (session()->has('orderData')) {
 			session()->forget('orderData');
 		}    
         return view('home');
+    }
+    /**
+     * Show the application dashboard.
+     *
+     * @return \Illuminate\Contracts\Support\Renderable
+     */
+    public function unreadNotification(string $idNotification)
+    {
+        $notification = auth()
+            ->user()
+            ->notifications()
+            ->findOrFail($idNotification);
+        $notification->markAsRead();
+        return redirect($notification->data['url']);		
     }
 }

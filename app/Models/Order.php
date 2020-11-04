@@ -77,18 +77,18 @@ class Order extends Model
     }
 
     /**
-     * Almacena un nuevo registro
+     * Almacena la data de la orden
      *
-     * @param array $data Datos para almacenar la orden.
-     * @return Order|false Modelo con la orden nueva o un estado false si hay algun error.
+     * @param array $data Datos para almacenar en la orden.
+     * @return Order|false Modelo con la ordeno un estado null si hay algun error.
      */
     public function store($data)
     {
         \DB::beginTransaction();
         try {
-            $order = $this->create($data);
+            $this->fill($data)->save();
             \DB::commit();
-            return $order;
+            return $this;
         } catch (\Throwable $exception) {
             \DB::rollback();
             return null;
@@ -104,9 +104,9 @@ class Order extends Model
      */
     public function getById($id, $withTrash = false)
     {
-        $query = $this->with(['transactions' => function ($query) {
-                $query->orderBy('created_at', 'desc');
-            }])
+        $query = $this->with(['transactions.transaction_states' => function ($query) {
+            $query->orderBy('created_at', 'desc');
+        }])
             ->where('id', $id);
         if ($withTrash) {
             $query->withTrashed();
@@ -154,20 +154,5 @@ class Order extends Model
         return self::whereRaw("DATEDIFF('" . date('Y-m-d H:i:s') . "', orders.created_at) >= " . $days)
             ->whereIn('status', $status)
             ->get();
-    }
-
-    /**
-     * Actualiza una orden.
-     *
-     * @param array $data Datos para actualizar la orden.
-     * @return Order|false Modelo con la orden.
-     */
-    public function edit($data)
-    {
-        try {
-            return $this->fill($data)->save();
-        } catch (\Illuminate\Database\QueryException $exception) {
-            return false;
-        }
     }
 }

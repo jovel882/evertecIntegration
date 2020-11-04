@@ -18,8 +18,6 @@ class AuthServiceProvider extends ServiceProvider
 
     /**
      * Register any authentication / authorization services.
-     *
-     * @return void
      */
     public function boot()
     {
@@ -28,8 +26,7 @@ class AuthServiceProvider extends ServiceProvider
         // Implicitly grant "Super Admin" role all permissions
         // This works in the app by using gate-related functions like auth()->user->can() and @can()
         Gate::before(function ($user, $ability) {
-            return $user->hasRole('SuperAdministrator') && !in_array($ability, ['isNotAuth', 'isAuth']) ? true : null;
+            return $user->hasRole('SuperAdministrator') && ! in_array($ability, ['isNotAuth', 'isAuth', 'pay'], true) ? true : null;
         });
-
     }
 }
