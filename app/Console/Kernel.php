@@ -13,28 +13,29 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        //
     ];
 
     /**
      * Define the application's command schedule.
-     *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
-     * @return void
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('payments:refresh_status')
+            ->cron('*/' . config('config.minutes_verify_pay') . ' * * * *')
+            ->withoutOverlapping()
+            ->timezone('America/Bogota');
+        $schedule->command('expired:orders')
+            ->dailyAt(config('config.time_expired_orders'))
+            ->withoutOverlapping()
+            ->timezone('America/Bogota');
     }
 
     /**
      * Register the commands for the application.
-     *
-     * @return void
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

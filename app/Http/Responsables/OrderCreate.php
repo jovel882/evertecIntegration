@@ -17,7 +17,7 @@ class OrderCreate implements Responsable
 
     protected $messageBag;
 
-    public function __construct(?Order $order = null, MessageBag $messageBag)
+    public function __construct(MessageBag $messageBag, ?Order $order = null)
     {
         $this->order = $order;
         $this->messageBag = $messageBag;

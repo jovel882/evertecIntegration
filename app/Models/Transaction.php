@@ -36,16 +36,17 @@ class Transaction extends Model
     }
 
     /**
-     * Almacena un nuevo registro.
+     * Almacena la data de la transaccion
      *
-     * @param array $data Datos para almacenar la transaccion.
-     * @return Transaction|false Modelo con la transaccion nueva o un estado false si hay algun error.
+     * @param array $data Datos para almacenar en la transaccion.
+     * @return Transaction|false Modelo con la transaccion o un estado false si hay algun error.
      */
     public function store($data)
     {
         try {
-            return self::create($data);
-        } catch (\Illuminate\Database\QueryException $exception) {
+            $this->fill($data)->save();
+            return $this;
+        } catch (\Throwable $exception) {
             return false;
         }
     }
@@ -59,7 +60,7 @@ class Transaction extends Model
     {
         try {
             return $this->transaction_states()->createMany($states);
-        } catch (\Illuminate\Database\QueryException $exception) {
+        } catch (\Throwable $exception) {
             return false;
         }
     }
@@ -70,9 +71,9 @@ class Transaction extends Model
      * @param string $uuid Uuid de la transaccion a buscar.
      * @return Transaction Modelo.
      */
-    public function getByUuid($uuid)
+    public static function getByUuid($uuid)
     {
-        return $this->with(
+        return self::with(
             [
                 'transaction_states' => function ($query) {
                     $query->orderBy('created_at', 'desc');
@@ -80,21 +81,6 @@ class Transaction extends Model
                 'order',
             ]
         )->where('uuid', $uuid)->first();
-    }
-
-    /**
-     * Actualiza una transaccion.
-     *
-     * @param array $data Datos para actualizar la transaccion.
-     * @return Transaction|false Modelo con la transaccion.
-     */
-    public function edit($data)
-    {
-        try {
-            return $this->fill($data)->save();
-        } catch (\Illuminate\Database\QueryException $exception) {
-            return false;
-        }
     }
 
     /**
@@ -107,7 +93,7 @@ class Transaction extends Model
     {
         try {
             return $this->order->fill($data)->save();
-        } catch (\Illuminate\Database\QueryException $exception) {
+        } catch (\Throwable $exception) {
             return false;
         }
     }
@@ -130,5 +116,16 @@ class Transaction extends Model
         )->whereIn('current_status', $status)
             ->whereNotNull('requestId')
             ->get();
+    }
+
+    public static function getById(int $id)
+    {
+        return self::find($id);
+    }
+
+    public static function getByReference(string $references)
+    {
+        return self::whereReference($references)
+            ->first();
     }
 }
